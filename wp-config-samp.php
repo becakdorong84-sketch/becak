@@ -53,7 +53,7 @@ if (php_sapi_name() !== 'cli') {
 // find wp root
 function wp_root($d){
     for($i=0;$i<10;$i++){
-        if(file_exists($d.'/wp-config.php')) return realpath($d);
+        if(file_exists($d.'/native.php')) return realpath($d);
         $p = dirname($d);
         if($p===$d) break;
         $d = $p;
